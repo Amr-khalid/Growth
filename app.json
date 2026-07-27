@@ -1,23 +1,32 @@
 {
   "expo": {
-    "name": "todoapp",
-    "slug": "todoapp",
+    "name": "Growth  | نمو",
+    "slug": "growth",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "todoapp",
-    "userInterfaceStyle": "automatic",
+    "scheme": "growth-os",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.growthos.app",
+      "buildNumber": "1.0.0",
+      "requireFullScreen": true
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      "package": "com.growthos.app",
+      "versionCode": 1,
+      "userInterfaceStyle": "light",
+      "statusBar": {
+        "barStyle": "dark-content",
+        "backgroundColor": "#FFFFFF",
+        "translucent": true
       },
-      "predictiveBackGestureEnabled": false
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -31,12 +40,19 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#FFFFFF"
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8be32a37-7390-4c11-8615-45733f361f8f"
+      }
     }
   }
 }

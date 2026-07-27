@@ -1,40 +1,54 @@
-import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+/**
+ * Not Found Screen — 404 fallback
+ */
 
-import { Text, View } from '@/components/Themed';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Typography, Spacing } from '../src/constants/theme';
 
 export default function NotFoundScreen() {
-  return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>This screen doesn't exist.</Text>
+  const router = useRouter();
 
-        <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Go to home screen!</Text>
-        </Link>
-      </View>
-    </>
+  return (
+    <View style={styles.container}>
+      <Ionicons name="compass-outline" size={64} color={Colors.textMuted} />
+      <Text style={styles.title}>Page Not Found</Text>
+      <Text style={styles.subtitle}>This screen doesn't exist.</Text>
+      <Pressable style={styles.button} onPress={() => router.replace('/')}>
+        <Text style={styles.buttonText}>Go to Dashboard</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.bgPrimary,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    gap: Spacing.md,
+    padding: Spacing['2xl'],
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    ...Typography.heading,
+    color: Colors.textPrimary,
   },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
+  subtitle: {
+    ...Typography.body,
+    color: Colors.textMuted,
   },
-  linkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  button: {
+    backgroundColor: Colors.work,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: 12,
+    marginTop: Spacing.base,
+  },
+  buttonText: {
+    ...Typography.body,
+    color: Colors.white,
+    fontWeight: '600',
   },
 });
