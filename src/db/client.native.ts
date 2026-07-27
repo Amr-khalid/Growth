@@ -105,21 +105,28 @@ export async function getDatabase(): Promise<DatabaseInterface> {
   if (dbPromise) return dbPromise;
 
   dbPromise = (async () => {
-    const sqliteDb = await SQLite.openDatabaseAsync('growthOS.db');
-    await sqliteDb.execAsync(INIT_SQL);
-    await migrateTasksTable(sqliteDb);
+    try {
+      const sqliteDb = await SQLite.openDatabaseAsync('growthOS.db');
+      await sqliteDb.execAsync(INIT_SQL);
+      await migrateTasksTable(sqliteDb);
 
-    return {
-      getAllAsync: <T>(sql: string, params?: any[]) =>
-        sqliteDb.getAllAsync<T>(sql, params || []),
-      getFirstAsync: <T>(sql: string, params?: any[]) =>
-        sqliteDb.getFirstAsync<T>(sql, params || []),
-      runAsync: async (sql: string, params?: any[]) => {
-        await sqliteDb.runAsync(sql, params || []);
-      },
-      execAsync: (sql: string) => sqliteDb.execAsync(sql),
-    };
+      return {
+        getAllAsync: <T>(sql: string, params?: any[]) =>
+          sqliteDb.getAllAsync<T>(sql, params || []),
+        getFirstAsync: <T>(sql: string, params?: any[]) =>
+          sqliteDb.getFirstAsync<T>(sql, params || []),
+        runAsync: async (sql: string, params?: any[]) => {
+          await sqliteDb.runAsync(sql, params || []);
+        },
+        execAsync: (sql: string) => sqliteDb.execAsync(sql),
+      };
+    } catch (error) {
+      dbPromise = null;
+      console.error('Failed to initialize SQLite database:', error);
+      throw error;
+    }
   })();
 
   return dbPromise;
 }
+
