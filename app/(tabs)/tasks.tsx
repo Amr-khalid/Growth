@@ -424,3 +424,4 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.96 }],
   },
 });
+ // Task view performance
