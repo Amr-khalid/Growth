@@ -7,10 +7,11 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, LogBox, StatusBar as RNStatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 import { Colors } from '../src/constants/theme';
+import { ErrorBoundary } from '../src/components/ErrorBoundary';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -19,6 +20,12 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* ignore splash screen prevent error on native */
 });
+
+// Suppress non-critical warnings that can cause noise in production
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+  'Sending `onAnimatedValueUpdate`',
+]);
 
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { CustomAlertProvider } from '../src/context/CustomAlertContext';
@@ -89,44 +96,47 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <LanguageProvider>
-        <CustomAlertProvider>
-          <View style={styles.container}>
-            <StatusBar style="dark" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: Colors.bgPrimary },
-                animation: 'slide_from_right',
-              }}
-            >
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen
-                name="habit/new"
-                options={{
-                  presentation: 'modal',
-                  animation: 'slide_from_bottom',
-                }}
-              />
-              <Stack.Screen
-                name="task/new"
-                options={{
-                  presentation: 'modal',
-                  animation: 'slide_from_bottom',
-                }}
-              />
-              <Stack.Screen
-                name="habit/[id]"
-                options={{
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <LanguageProvider>
+          <CustomAlertProvider>
+            <View style={styles.container}>
+              <StatusBar style="dark" />
+              {Platform.OS === 'android' && <RNStatusBar translucent backgroundColor="transparent" />}
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: Colors.bgPrimary },
                   animation: 'slide_from_right',
                 }}
-              />
-            </Stack>
-          </View>
-        </CustomAlertProvider>
-      </LanguageProvider>
-    </SafeAreaProvider>
+              >
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen
+                  name="habit/new"
+                  options={{
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
+                  }}
+                />
+                <Stack.Screen
+                  name="task/new"
+                  options={{
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
+                  }}
+                />
+                <Stack.Screen
+                  name="habit/[id]"
+                  options={{
+                    animation: 'slide_from_right',
+                  }}
+                />
+              </Stack>
+            </View>
+          </CustomAlertProvider>
+        </LanguageProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
 

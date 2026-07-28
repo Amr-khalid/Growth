@@ -14,7 +14,14 @@ interface BadgeProps {
 }
 
 export function Badge({ category, size = 'sm' }: BadgeProps) {
-  const config = CATEGORIES[category];
+  const config = CATEGORIES[category as keyof typeof CATEGORIES] || {
+    key: category,
+    label: category,
+    emoji: '🎯',
+    icon: 'bookmark',
+    color: Colors.work,
+    bgColor: Colors.workBg,
+  };
 
   return (
     <View style={[

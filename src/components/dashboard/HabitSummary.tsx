@@ -72,7 +72,7 @@ function HabitCircle({
   onPress: (id: string) => void;
   index: number;
 }) {
-  const categoryColor = CATEGORIES[habit.category].color;
+  const categoryColor = CATEGORIES[habit.category as keyof typeof CATEGORIES]?.color || Colors.work;
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -107,7 +107,7 @@ function HabitCircle({
           {habit.isCompletedToday ? (
             <Ionicons name="checkmark" size={22} color={Colors.white} />
           ) : (
-            <Text style={[styles.habitEmoji]}>{CATEGORIES[habit.category].emoji}</Text>
+            <Text style={[styles.habitEmoji]}>{CATEGORIES[habit.category as keyof typeof CATEGORIES]?.emoji || '🎯'}</Text>
           )}
         </Animated.View>
       </Pressable>

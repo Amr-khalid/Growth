@@ -20,7 +20,7 @@
       "userInterfaceStyle": "light",
       "statusBar": {
         "barStyle": "dark-content",
-        "backgroundColor": "#FFFFFF",
+        "backgroundColor": "#00000000",
         "translucent": true
       },
       "adaptiveIcon": {

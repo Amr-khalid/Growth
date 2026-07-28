@@ -120,7 +120,7 @@ export function calculateStreakWithGrace(
       longestStreak: 0,
       graceDaysRemaining: maxGraceDays,
       isGraceActive: false,
-      daysSinceLastActivity: Infinity,
+      daysSinceLastActivity: 999,
       activeDatesSet,
       graceDatesSet,
     };

@@ -94,7 +94,7 @@ function MissionItem({
   onToggle: (id: string) => void;
   index: number;
 }) {
-  const categoryColor = CATEGORIES[mission.category].color;
+  const categoryColor = CATEGORIES[mission.category as keyof typeof CATEGORIES]?.color || Colors.work;
   const checkScale = useSharedValue(1);
 
   const checkAnimatedStyle = useAnimatedStyle(() => ({

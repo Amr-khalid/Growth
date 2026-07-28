@@ -100,6 +100,8 @@ async function migrateTasksTable(sqliteDb: SQLite.SQLiteDatabase) {
 }
 
 let dbPromise: Promise<DatabaseInterface> | null = null;
+let retryCount = 0;
+const MAX_RETRIES = 3;
 
 export async function getDatabase(): Promise<DatabaseInterface> {
   if (dbPromise) return dbPromise;
@@ -109,24 +111,58 @@ export async function getDatabase(): Promise<DatabaseInterface> {
       const sqliteDb = await SQLite.openDatabaseAsync('growthOS.db');
       await sqliteDb.execAsync(INIT_SQL);
       await migrateTasksTable(sqliteDb);
+      retryCount = 0; // Reset retry count on success
 
       return {
-        getAllAsync: <T>(sql: string, params?: any[]) =>
-          sqliteDb.getAllAsync<T>(sql, params || []),
-        getFirstAsync: <T>(sql: string, params?: any[]) =>
-          sqliteDb.getFirstAsync<T>(sql, params || []),
-        runAsync: async (sql: string, params?: any[]) => {
-          await sqliteDb.runAsync(sql, params || []);
+        getAllAsync: <T>(sql: string, params?: any[]) => {
+          try {
+            return sqliteDb.getAllAsync<T>(sql, params || []);
+          } catch (e) {
+            console.error('DB getAllAsync error:', e);
+            return Promise.resolve([] as T[]);
+          }
         },
-        execAsync: (sql: string) => sqliteDb.execAsync(sql),
+        getFirstAsync: <T>(sql: string, params?: any[]) => {
+          try {
+            return sqliteDb.getFirstAsync<T>(sql, params || []);
+          } catch (e) {
+            console.error('DB getFirstAsync error:', e);
+            return Promise.resolve(null as T | null);
+          }
+        },
+        runAsync: async (sql: string, params?: any[]) => {
+          try {
+            await sqliteDb.runAsync(sql, params || []);
+          } catch (e) {
+            console.error('DB runAsync error:', e);
+          }
+        },
+        execAsync: async (sql: string) => {
+          try {
+            await sqliteDb.execAsync(sql);
+          } catch (e) {
+            console.error('DB execAsync error:', e);
+          }
+        },
       };
     } catch (error) {
       dbPromise = null;
       console.error('Failed to initialize SQLite database:', error);
+
+      // Retry logic for transient initialization failures
+      if (retryCount < MAX_RETRIES) {
+        retryCount++;
+        console.warn(`Retrying database initialization (attempt ${retryCount}/${MAX_RETRIES})...`);
+        // Small delay before retry
+        await new Promise((resolve) => setTimeout(resolve, 500 * retryCount));
+        return getDatabase();
+      }
+
       throw error;
     }
   })();
 
   return dbPromise;
 }
+
 

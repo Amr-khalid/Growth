@@ -21,7 +21,7 @@ export function HeatmapGrid({
   category,
   days = 91,
 }: HeatmapGridProps) {
-  const accentColor = CATEGORIES[category].color;
+  const accentColor = CATEGORIES[category as keyof typeof CATEGORIES]?.color || Colors.work;
   const dateSet = new Set(completionDates);
   const allDays = getLastNDays(days);
 

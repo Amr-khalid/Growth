@@ -39,7 +39,14 @@ export default function HabitDetailScreen() {
     );
   }
 
-  const catConfig = CATEGORIES[habit.category];
+  const catConfig = CATEGORIES[habit.category as keyof typeof CATEGORIES] || {
+    key: habit.category,
+    label: habit.category,
+    emoji: '🎯',
+    icon: 'bookmark',
+    color: Colors.work,
+    bgColor: Colors.workBg,
+  };
 
   const last30Completions = habit.completions.filter((d) => {
     const date = new Date(d);

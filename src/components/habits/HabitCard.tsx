@@ -27,7 +27,14 @@ interface HabitCardProps {
 }
 
 export function HabitCard({ habit, onToggle, onPress, index }: HabitCardProps) {
-  const categoryConfig = CATEGORIES[habit.category];
+  const categoryConfig = CATEGORIES[habit.category as keyof typeof CATEGORIES] || {
+    key: habit.category,
+    label: habit.category,
+    emoji: '🎯',
+    icon: 'bookmark',
+    color: Colors.work,
+    bgColor: Colors.workBg,
+  };
   const scale = useSharedValue(1);
 
   const checkAnimStyle = useAnimatedStyle(() => ({
