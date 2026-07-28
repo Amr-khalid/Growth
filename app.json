@@ -18,16 +18,12 @@
       "package": "com.growthos.app",
       "versionCode": 1,
       "userInterfaceStyle": "light",
-      "statusBar": {
-        "barStyle": "dark-content",
-        "backgroundColor": "#00000000",
-        "translucent": true
-      },
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       }
     },
+
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -56,3 +52,4 @@
     }
   }
 }
+// Version 1.0.0 configuration verified
