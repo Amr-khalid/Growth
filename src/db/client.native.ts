@@ -166,3 +166,4 @@ export async function getDatabase(): Promise<DatabaseInterface> {
 }
 
 
+ // Native sqlite connection
