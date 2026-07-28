@@ -257,3 +257,4 @@ export function getCompletionMap(
   return map;
 }
 
+ // Freeze count calculator
