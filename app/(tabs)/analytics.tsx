@@ -390,3 +390,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+ // Progress metric chart
