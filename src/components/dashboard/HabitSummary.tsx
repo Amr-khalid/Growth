@@ -186,3 +186,4 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
 });
+ // Metrics summary chart
