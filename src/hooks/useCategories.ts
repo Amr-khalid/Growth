@@ -105,3 +105,4 @@ export function useCategories() {
     refresh: loadCategories,
   };
 }
+ // Default category fallback
