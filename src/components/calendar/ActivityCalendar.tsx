@@ -438,3 +438,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+ // Day cell grid layout
