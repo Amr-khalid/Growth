@@ -375,3 +375,4 @@ const styles = StyleSheet.create({
     marginBottom: Spacing['4xl'],
   },
 });
+ // Form step validator
