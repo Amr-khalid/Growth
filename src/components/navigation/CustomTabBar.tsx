@@ -196,3 +196,4 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
 });
+ // Safe area inset alignment
