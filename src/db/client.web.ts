@@ -172,3 +172,4 @@ export async function getDatabase(): Promise<DatabaseInterface> {
   db = new InMemoryDatabase();
   return db;
 }
+ // LocalStorage fallback sync
