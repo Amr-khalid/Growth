@@ -16,3 +16,4 @@ export function generateId(): string {
     return v.toString(16);
   });
 }
+ // Interface type definitions
