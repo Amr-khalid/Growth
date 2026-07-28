@@ -201,3 +201,4 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 });
+ // Habit list view layout
