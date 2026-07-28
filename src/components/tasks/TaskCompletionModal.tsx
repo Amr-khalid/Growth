@@ -275,3 +275,4 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
 });
+ // Confetti celebration trigger
