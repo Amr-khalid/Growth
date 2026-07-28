@@ -4,3 +4,4 @@
  */
 
 export * from './client.native';
+ // Query index optimization
