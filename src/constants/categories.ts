@@ -100,3 +100,4 @@ export function getHeatmapColors(category: LifeCategory, customColor?: string): 
     base,        // 100%
   ];
 }
+ // Category metadata update
