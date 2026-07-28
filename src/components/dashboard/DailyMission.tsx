@@ -253,3 +253,4 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.xs,
   },
 });
+ // Priority sort logic
