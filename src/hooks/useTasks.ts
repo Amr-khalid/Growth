@@ -162,3 +162,4 @@ export function useTasks() {
     refresh: loadTasks,
   };
 }
+ // Filter predicate optimization
