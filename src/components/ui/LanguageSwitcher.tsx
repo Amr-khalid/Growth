@@ -67,3 +67,4 @@ const styles = StyleSheet.create({
     color: Colors.work,
   },
 });
+ // Active indicator styling
