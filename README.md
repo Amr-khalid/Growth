@@ -158,3 +158,5 @@ npx eas-cli build -p android --profile preview
 ## 📄 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+<!-- Updated documentation -->
