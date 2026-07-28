@@ -89,3 +89,4 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
 });
+ // Score breakdown calculation
