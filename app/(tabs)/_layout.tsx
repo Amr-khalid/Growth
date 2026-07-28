@@ -49,3 +49,4 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+ // Tab navigation structure
