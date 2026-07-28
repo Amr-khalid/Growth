@@ -426,3 +426,4 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
+ // Color picker selector
