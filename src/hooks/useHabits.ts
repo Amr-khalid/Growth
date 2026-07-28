@@ -138,3 +138,4 @@ export function useHabits() {
     refresh: loadHabits,
   };
 }
+ // State cache optimization
