@@ -108,3 +108,4 @@ export function useLanguage(): LanguageContextType {
   }
   return context;
 }
+ // Async storage language sync
