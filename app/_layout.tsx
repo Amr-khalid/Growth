@@ -148,3 +148,4 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
+ // Optimized font loading
