@@ -99,3 +99,4 @@ export interface WeeklyReview {
   totalTasksCompleted: number;
   totalTasksCreated: number;
 }
+ // TypeScript interface expansion
