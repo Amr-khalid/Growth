@@ -17,15 +17,20 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
-SplashScreen.preventAutoHideAsync().catch(() => {
-  /* ignore splash screen prevent error on native */
-});
+try {
+  SplashScreen.preventAutoHideAsync().catch(() => {
+    /* ignore splash screen prevent error on native */
+  });
+} catch (e) {
+  // Catch potential early native bridge initialization errors
+}
 
 // Suppress non-critical warnings that can cause noise in production
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
   'Sending `onAnimatedValueUpdate`',
 ]);
+
 
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { CustomAlertProvider } from '../src/context/CustomAlertContext';

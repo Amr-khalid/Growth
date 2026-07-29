@@ -158,7 +158,14 @@ export async function getDatabase(): Promise<DatabaseInterface> {
         return getDatabase();
       }
 
-      throw error;
+      // Fallback safe dummy database interface to prevent app crash if SQLite fails
+      console.error('Database initialization failed after retries, returning safe fallback DB');
+      return {
+        getAllAsync: async () => [],
+        getFirstAsync: async () => null,
+        runAsync: async () => {},
+        execAsync: async () => {},
+      };
     }
   })();
 
