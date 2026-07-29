@@ -9,9 +9,6 @@ import type { DatabaseInterface } from './client.types';
 export { generateId } from './client.types';
 
 const INIT_SQL = `
-  PRAGMA journal_mode = WAL;
-  PRAGMA foreign_keys = ON;
-
   CREATE TABLE IF NOT EXISTS categories (
     id TEXT PRIMARY KEY NOT NULL,
     label TEXT NOT NULL,
@@ -109,25 +106,38 @@ export async function getDatabase(): Promise<DatabaseInterface> {
   dbPromise = (async () => {
     try {
       const sqliteDb = await SQLite.openDatabaseAsync('growthOS.db');
+
+      // PRAGMA statements executed safely and independently
+      try {
+        await sqliteDb.execAsync('PRAGMA journal_mode = WAL;');
+      } catch (e) {
+        console.warn('PRAGMA journal_mode error:', e);
+      }
+      try {
+        await sqliteDb.execAsync('PRAGMA foreign_keys = ON;');
+      } catch (e) {
+        console.warn('PRAGMA foreign_keys error:', e);
+      }
+
       await sqliteDb.execAsync(INIT_SQL);
       await migrateTasksTable(sqliteDb);
       retryCount = 0; // Reset retry count on success
 
       return {
-        getAllAsync: <T>(sql: string, params?: any[]) => {
+        getAllAsync: async <T>(sql: string, params?: any[]): Promise<T[]> => {
           try {
-            return sqliteDb.getAllAsync<T>(sql, params || []);
+            return await sqliteDb.getAllAsync<T>(sql, params || []);
           } catch (e) {
             console.error('DB getAllAsync error:', e);
-            return Promise.resolve([] as T[]);
+            return [];
           }
         },
-        getFirstAsync: <T>(sql: string, params?: any[]) => {
+        getFirstAsync: async <T>(sql: string, params?: any[]): Promise<T | null> => {
           try {
-            return sqliteDb.getFirstAsync<T>(sql, params || []);
+            return await sqliteDb.getFirstAsync<T>(sql, params || []);
           } catch (e) {
             console.error('DB getFirstAsync error:', e);
-            return Promise.resolve(null as T | null);
+            return null;
           }
         },
         runAsync: async (sql: string, params?: any[]) => {
