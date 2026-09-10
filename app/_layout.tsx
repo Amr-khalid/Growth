@@ -2,14 +2,14 @@
  * Root Layout — App entry point with light theme and screen definitions
  */
 
-import { useEffect } from 'react';
+import 'react-native-reanimated';
+import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+import { Stack, SplashScreen } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Platform, LogBox, StatusBar as RNStatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../src/constants/theme';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
 
@@ -17,20 +17,27 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
-try {
-  SplashScreen.preventAutoHideAsync().catch(() => {
-    /* ignore splash screen prevent error on native */
-  });
-} catch (e) {
-  // Catch potential early native bridge initialization errors
+// Catch unhandled promise rejections on native to avoid hard process exit on Android Hermes
+if (typeof globalThis !== 'undefined') {
+  // @ts-ignore
+  globalThis.onunhandledrejection = (event: any) => {
+    console.warn('Unhandled promise rejection caught:', event?.reason || event);
+    if (event?.preventDefault) {
+      event.preventDefault();
+    }
+  };
 }
+
+// Keep splash screen visible until assets are ready
+SplashScreen.preventAutoHideAsync().catch(() => {
+  /* ignore splash screen prevent error on native */
+});
 
 // Suppress non-critical warnings that can cause noise in production
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
   'Sending `onAnimatedValueUpdate`',
 ]);
-
 
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { CustomAlertProvider } from '../src/context/CustomAlertContext';
@@ -81,8 +88,11 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
+    ...Ionicons.font,
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -92,11 +102,21 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded || error) {
+      setAppIsReady(true);
       SplashScreen.hideAsync().catch(() => {});
     }
   }, [loaded, error]);
 
-  if (!loaded && !error) {
+  // Safety fallback: Ensure splash screen hides and app mounts even if font loading hangs on Android
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAppIsReady(true);
+      SplashScreen.hideAsync().catch(() => {});
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!appIsReady && !loaded && !error) {
     return null;
   }
 
