@@ -8,6 +8,7 @@
     "scheme": "growth-os",
     "userInterfaceStyle": "light",
     "backgroundColor": "#FFFFFF",
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.growthos.app",
