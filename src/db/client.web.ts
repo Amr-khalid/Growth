@@ -9,7 +9,7 @@ export { generateId } from './client.types';
 
 type Row = Record<string, any>;
 
-class InMemoryDatabase implements DatabaseInterface {
+export class InMemoryDatabase implements DatabaseInterface {
   private tables: Record<string, Row[]> = {};
 
   constructor() {
