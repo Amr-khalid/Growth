@@ -34,9 +34,21 @@ export function useHabits() {
           const { currentStreak, longestStreak } = calculateStreaks(completionDates);
           const isCompletedToday = completionDates.includes(today);
 
+          let parsedSpecificDays: number[] | undefined;
+          if (habit.specificDays) {
+            try {
+              parsedSpecificDays =
+                typeof habit.specificDays === 'string'
+                  ? JSON.parse(habit.specificDays)
+                  : (habit.specificDays as unknown as number[]);
+            } catch (e) {
+              parsedSpecificDays = undefined;
+            }
+          }
+
           return {
             ...habit,
-            specificDays: habit.specificDays ? JSON.parse(habit.specificDays as unknown as string) : undefined,
+            specificDays: parsedSpecificDays,
             isArchived: Boolean(habit.isArchived),
             currentStreak,
             longestStreak,
