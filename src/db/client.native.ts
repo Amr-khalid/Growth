@@ -3,10 +3,13 @@
  * Loaded by Metro on native devices. Uses real expo-sqlite.
  */
 
-import * as SQLite from 'expo-sqlite';
 import type { DatabaseInterface } from './client.types';
+import type { SQLiteDatabase } from 'expo-sqlite';
+import { InMemoryDatabase } from './client.web';
 
 export { generateId } from './client.types';
+
+
 
 const INIT_SQL = `
   CREATE TABLE IF NOT EXISTS categories (
@@ -78,22 +81,45 @@ const INIT_SQL = `
   );
 `;
 
-async function migrateTasksTable(sqliteDb: SQLite.SQLiteDatabase) {
-  const columnsToAdd = [
-    { name: 'requireProof', type: 'INTEGER NOT NULL DEFAULT 0' },
-    { name: 'proofImageUri', type: 'TEXT' },
-    { name: 'proofAudioUri', type: 'TEXT' },
-    { name: 'proofFileUri', type: 'TEXT' },
-    { name: 'proofNote', type: 'TEXT' },
-  ];
+async function migrateTasksTable(sqliteDb: SQLiteDatabase) {
+  try {
+    const tableInfo = await sqliteDb.getAllAsync<{ name: string }>('PRAGMA table_info(tasks);');
+    const existingCols = new Set(tableInfo.map((c) => c.name));
 
-  for (const col of columnsToAdd) {
+    const columnsToAdd = [
+      { name: 'requireProof', type: 'INTEGER NOT NULL DEFAULT 0' },
+      { name: 'proofImageUri', type: 'TEXT' },
+      { name: 'proofAudioUri', type: 'TEXT' },
+      { name: 'proofFileUri', type: 'TEXT' },
+      { name: 'proofNote', type: 'TEXT' },
+    ];
+
+    for (const col of columnsToAdd) {
+      if (!existingCols.has(col.name)) {
+        try {
+          await sqliteDb.execAsync(`ALTER TABLE tasks ADD COLUMN ${col.name} ${col.type};`);
+        } catch (e) {
+          // Column already exists or table locked, safely continue
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Task migration check error:', e);
+  }
+}
+
+let sqliteModule: any = null;
+
+function loadSQLiteModule() {
+  if (!sqliteModule) {
     try {
-      await sqliteDb.execAsync(`ALTER TABLE tasks ADD COLUMN ${col.name} ${col.type};`);
+      sqliteModule = require('expo-sqlite');
     } catch (e) {
-      // Column already exists, ignore
+      console.warn('Native expo-sqlite is not available in this client environment:', e);
+      return null;
     }
   }
+  return sqliteModule;
 }
 
 let dbPromise: Promise<DatabaseInterface> | null = null;
@@ -105,13 +131,29 @@ export async function getDatabase(): Promise<DatabaseInterface> {
 
   dbPromise = (async () => {
     try {
-      const sqliteDb = await SQLite.openDatabaseAsync('growthOS.db');
+      const SQLite = loadSQLiteModule();
+      if (!SQLite || !SQLite.openDatabaseAsync) {
+        console.warn('Native SQLite module not found, using InMemoryDatabase fallback');
+        return new InMemoryDatabase();
+      }
+
+      const sqliteDb: SQLiteDatabase = await SQLite.openDatabaseAsync('growthOS.db');
 
       // PRAGMA statements executed safely and independently
       try {
         await sqliteDb.execAsync('PRAGMA journal_mode = WAL;');
       } catch (e) {
         console.warn('PRAGMA journal_mode error:', e);
+      }
+      try {
+        await sqliteDb.execAsync('PRAGMA busy_timeout = 5000;');
+      } catch (e) {
+        console.warn('PRAGMA busy_timeout error:', e);
+      }
+      try {
+        await sqliteDb.execAsync('PRAGMA synchronous = NORMAL;');
+      } catch (e) {
+        console.warn('PRAGMA synchronous error:', e);
       }
       try {
         await sqliteDb.execAsync('PRAGMA foreign_keys = ON;');
@@ -168,14 +210,9 @@ export async function getDatabase(): Promise<DatabaseInterface> {
         return getDatabase();
       }
 
-      // Fallback safe dummy database interface to prevent app crash if SQLite fails
-      console.error('Database initialization failed after retries, returning safe fallback DB');
-      return {
-        getAllAsync: async () => [],
-        getFirstAsync: async () => null,
-        runAsync: async () => {},
-        execAsync: async () => {},
-      };
+      // Fallback safe in-memory database to prevent app crash if SQLite fails
+      console.error('Database initialization failed after retries, returning safe InMemoryDatabase fallback');
+      return new InMemoryDatabase();
     }
   })();
 
